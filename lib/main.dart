@@ -4,8 +4,28 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  int _selectedIndex = 0;
+
+  static const List<Widget> _screens = <Widget>[
+    MyHomePage(title: 'Flutter Demo Home Page'),
+    Calculator(),
+    Syllabus(),
+    Settings(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,12 +34,32 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.deepPurple),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-      routes: {
-        '/page1': (context) => Page1(),
-        '/page2': (context) => Page2(),
-        '/page3': (context) => Page3(),
-      },
+      home: Scaffold(
+        body: _screens.elementAt(_selectedIndex),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.calculate),
+              label: 'Calculator',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.school),
+              label: 'Syllabus',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings),
+              label: 'Settings',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.deepPurple,
+          onTap: _onItemTapped,
+        ),
+      ),
     );
   }
 }
@@ -36,27 +76,51 @@ class MyHomePage extends StatelessWidget {
         title: Text(title),
       ),
       body: Center(
+        child: ElevatedButton(
+          onPressed: () async {
+            final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        DetailScreen(data: 'Data from Home')));
+            print(result);
+          },
+          child: const Text('Go to Detail Screen'),
+        ),
+      ),
+    );
+  }
+}
+
+class DetailScreen extends StatelessWidget {
+  final String data;
+
+  const DetailScreen({required this.data, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Detail Screen'),
+      ),
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/page1');
-              },
-              child: const Text('Go to Page 1'),
+            Text('Data: $data'),
+            Text(
+              'Created by Alikhan Amirov / Laboratory Work 5 & 6',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/page2');
+                Navigator.pop(context, 'Data from DetailScreen');
               },
-              child: const Text('Go to Page 2'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/page3');
-              },
-              child: const Text('Go to Page 3'),
+              child: const Text('Back to Home'),
             ),
           ],
         ),
@@ -65,17 +129,19 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
-class Page1 extends StatelessWidget {
+class Calculator extends StatelessWidget {
+  const Calculator({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Page 1'),
+        title: const Text('Calculator'),
       ),
       body: Center(
         child: ElevatedButton(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.popUntil(context, ModalRoute.withName('/'));
           },
           child: const Text('Back to Home'),
         ),
@@ -84,17 +150,19 @@ class Page1 extends StatelessWidget {
   }
 }
 
-class Page2 extends StatelessWidget {
+class Syllabus extends StatelessWidget {
+  const Syllabus({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Page 2'),
+        title: const Text('Syllabus'),
       ),
       body: Center(
         child: ElevatedButton(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.popUntil(context, ModalRoute.withName('/'));
           },
           child: const Text('Back to Home'),
         ),
@@ -103,17 +171,19 @@ class Page2 extends StatelessWidget {
   }
 }
 
-class Page3 extends StatelessWidget {
+class Settings extends StatelessWidget {
+  const Settings({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Page 3'),
+        title: const Text('Settings'),
       ),
       body: Center(
         child: ElevatedButton(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.popUntil(context, ModalRoute.withName('/'));
           },
           child: const Text('Back to Home'),
         ),
